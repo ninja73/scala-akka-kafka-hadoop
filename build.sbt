@@ -1,4 +1,4 @@
-import com.typesafe.sbt.packager.Keys.{dockerCommands, dockerEntrypoint}
+import com.typesafe.sbt.packager.Keys.dockerEntrypoint
 
 lazy val commonSetting = Seq(
   organization := "com.ninja73",
