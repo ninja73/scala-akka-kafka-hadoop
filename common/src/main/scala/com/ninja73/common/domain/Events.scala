@@ -1,5 +1,7 @@
 package com.ninja73.common.domain
 
-sealed trait Event
+sealed trait Event {
+  val eventType: String
+}
 
-case class SomeEvent(text: String) extends Event
+case class SomeEvent(eventType: String, text: String) extends Event
