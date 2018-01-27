@@ -18,15 +18,24 @@ lazy val dockerSetting = Seq(
   dockerEntrypoint := Seq("bin/docker-entry-point.sh"))
 
 lazy val common = (project in file("common"))
-  .settings(commonSetting)
+  .settings(
+    commonSetting,
+    libraryDependencies ++=
+      Dependencies.Logger ++
+        Seq(Dependencies.sprayJson))
 
 lazy val kafka = (project in file("kafka"))
-  .settings(commonSetting)
+  .settings(
+    commonSetting,
+    libraryDependencies ++= Dependencies.Kafka)
+  .dependsOn(common)
 
 lazy val api = (project in file("api"))
-  .settings(commonSetting: _*)
+  .settings(
+    commonSetting,
+    libraryDependencies ++= Dependencies.Akka)
   .dependsOn(common)
 
 lazy val hiveWriter = (project in file("hive-writer"))
-  .settings(commonSetting: _*)
+  .settings(commonSetting)
   .dependsOn(common)
