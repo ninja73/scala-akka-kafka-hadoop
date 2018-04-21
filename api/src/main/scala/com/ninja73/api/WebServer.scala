@@ -16,7 +16,7 @@ object WebServer extends App {
   implicit val executionContext: ExecutionContextExecutor = system.dispatcher
 
   val router: Route = {
-    new EventRoute().route
+    EventRoute().route
   }
 
   val bindingFuture = Http().bindAndHandle(router, "localhost", 9090)

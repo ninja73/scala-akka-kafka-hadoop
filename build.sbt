@@ -34,8 +34,8 @@ lazy val api = (project in file("api"))
   .settings(
     commonSetting,
     libraryDependencies ++= Dependencies.Akka)
-  .dependsOn(common)
+  .dependsOn(kafka)
 
 lazy val hiveWriter = (project in file("hive-writer"))
   .settings(commonSetting)
-  .dependsOn(common)
+  .dependsOn(kafka)

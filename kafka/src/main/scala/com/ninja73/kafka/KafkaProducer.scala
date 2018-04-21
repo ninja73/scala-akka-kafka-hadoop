@@ -1,6 +1,6 @@
 package com.ninja73.kafka
 
-import akka.actor.{Actor, ActorRef, ActorSystem}
+import akka.actor.{ActorRef, ActorSystem}
 import akka.kafka.ProducerSettings
 import akka.kafka.scaladsl.Producer
 import akka.stream.scaladsl.{Keep, Source}
@@ -36,4 +36,8 @@ class KafkaProducer[T <: Event : JsonFormat](host: String, topic: String)(implic
   def sendMessageToKafka(msg: T): Unit = {
     producerActor ! msg
   }
+}
+
+object KafkaProducer {
+  def apply[T <: Event : JsonFormat](host: String, topic: String)(implicit system: ActorSystem): KafkaProducer[T] = new KafkaProducer[T](host, topic)
 }
