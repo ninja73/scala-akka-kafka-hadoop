@@ -7,33 +7,36 @@ import com.ninja73.common.util.JsonSupport
 import org.apache.kafka.common.serialization.{Deserializer, Serializer, StringDeserializer, StringSerializer}
 import spray.json._
 
-class KafkaJsonSerializer extends Serializer[Event] with JsonSupport {
+object KafkaJsonSupport {
 
-  val stringSerializer = new StringSerializer
+  class KafkaJsonSerializer[T <: Event : JsonFormat] extends Serializer[T] with JsonSupport {
 
-  def configure(configs: util.Map[String, _], isKey: Boolean): Unit =
-    stringSerializer.configure(configs, isKey)
+    val stringSerializer = new StringSerializer
 
-  def serialize(topic: String, data: Event): Array[Byte] = {
-    stringSerializer.serialize(topic, data.toJson.compactPrint)
+    def configure(configs: util.Map[String, _], isKey: Boolean): Unit =
+      stringSerializer.configure(configs, isKey)
+
+    def serialize(topic: String, data: T): Array[Byte] = {
+      stringSerializer.serialize(topic, data.toJson.compactPrint)
+    }
+
+    def close(): Unit = stringSerializer.close()
+
   }
 
-  def close(): Unit = stringSerializer.close()
+  class KafkaJsonDeserializer[T <: Event : JsonFormat] extends Deserializer[T] with JsonSupport {
 
-}
+    val stringDeserializer = new StringDeserializer
 
-class KafkaJsonDeserializer extends Deserializer[Event] with JsonSupport {
+    def configure(configs: util.Map[String, _], isKey: Boolean): Unit =
+      stringDeserializer.configure(configs, isKey)
 
-  val stringDeserializer = new StringDeserializer
+    def deserialize(topic: String, data: Array[Byte]): T = {
+      val eventJson = stringDeserializer.deserialize(topic, data).parseJson
+      eventJson.convertTo[T]
+    }
 
-  def configure(configs: util.Map[String, _], isKey: Boolean): Unit =
-    stringDeserializer.configure(configs, isKey)
-
-  //TODO заглушка
-  def deserialize(topic: String, data: Array[Byte]): Event = {
-    val eventJson = stringDeserializer.deserialize(topic, data).parseJson
-    eventJson.convertTo[Event]
+    def close(): Unit = stringDeserializer.close()
   }
 
-  def close(): Unit = stringDeserializer.close()
 }
